@@ -233,7 +233,7 @@ class FluxTransformer(nn.Module):
         )
         sample_channels = sample.shape[1]
 
-        sample, attention_mask = self._pack_latents(
+        sample, _ = self._pack_latents(
             latents=sample,
             batch_size=bs,
             num_channels_latents=sample.shape[1],
@@ -266,7 +266,6 @@ class FluxTransformer(nn.Module):
                 txt=context_embed,
                 vec=time_embed,
                 pe=rope_embed,
-                attention_mask=attention_mask,
             )
 
         latent_embed = torch.cat((context_embed, latent_embed), dim=1)
@@ -276,7 +275,6 @@ class FluxTransformer(nn.Module):
                 x=latent_embed,
                 vec=time_embed,
                 pe=rope_embed,
-                attention_mask=attention_mask,
             )
         latent_embed = latent_embed[:, context_embed.shape[1] :, ...]
 
