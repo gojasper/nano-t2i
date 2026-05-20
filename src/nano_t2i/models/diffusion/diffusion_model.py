@@ -107,7 +107,7 @@ class DiffusionModel(BaseModel):
         else:
             z = batch[self.input_key]
 
-        print("Time to get VAE embedding", time.perf_counter() - start_time)
+        logging.debug(f"Time to get VAE embedding {time.perf_counter() - start_time}")
 
         start_time_conditioning = time.perf_counter()
         conditioning = self._get_conditioning(
@@ -115,7 +115,9 @@ class DiffusionModel(BaseModel):
             *args,
             **kwargs,
         )
-        print("Time to get conditioning", time.perf_counter() - start_time_conditioning)
+        logging.debug(
+            f"Time to get conditioning {time.perf_counter() - start_time_conditioning}"
+        )
 
         # Sample noise
         noise = torch.randn_like(z)
@@ -127,7 +129,9 @@ class DiffusionModel(BaseModel):
             n_samples=z.shape[0],
             device=z.device,
         ).to(z.dtype)
-        print("Time to sample timestep", time.perf_counter() - start_timestep_sampling)
+        logging.debug(
+            f"Time to sample timestep {time.perf_counter() - start_timestep_sampling}"
+        )
 
         noisy_sample = (
             timestep.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1) * noise
@@ -142,20 +146,20 @@ class DiffusionModel(BaseModel):
             conditioning=conditioning,
         )
         prediction = denoiser_output.sample
-        print("Time to predict noise", time.perf_counter() - start_time_dit)
+        logging.debug(f"Time to predict noise {time.perf_counter() - start_time_dit}")
 
         target = noise - z
 
         # Compute loss
         start_time_latent_loss = time.perf_counter()
         loss = self.latent_loss(prediction, target)
-        print(
-            "Time to compute latent loss", time.perf_counter() - start_time_latent_loss
+        logging.debug(
+            f"Time to compute latent loss {time.perf_counter() - start_time_latent_loss}"
         )
         out = {"loss": loss.mean(), "latent_loss": loss.mean()}
 
-        print(f"out: {out}")
-        print(f"Forward time: {time.perf_counter() - start_time}")
+        logging.debug(f"out: {out}")
+        logging.debug(f"Forward time: {time.perf_counter() - start_time}")
         return out
 
     def latent_loss(self, prediction, model_input):

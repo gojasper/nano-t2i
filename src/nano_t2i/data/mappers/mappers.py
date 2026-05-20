@@ -377,7 +377,7 @@ class GetCaptionFromJsonBasedOnNameMapper(BaseMapper):
                 continue
             elif self.verbose:
                 logging.warning(
-                    f"Key {key} not in batch for url {batch["__url__"]}. Probability for this key will be set to 0."
+                    f"Key {key} not in batch for url {batch['__url__']}. Probability for this key will be set to 0."
                 )
 
         if len(available_keys) == 0:

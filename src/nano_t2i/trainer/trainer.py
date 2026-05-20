@@ -102,7 +102,7 @@ class TrainingPipeline(pl.LightningModule):
 
     def on_after_backward(self, *args, **kwargs) -> None:
         if self.global_rank == 0:
-            logging.info("on_after_backward")
+            logging.debug("on_after_backward")
         self.model.on_after_backward(
             forward_count=self.training_forward_pass_counter, *args, **kwargs
         )
@@ -111,19 +111,19 @@ class TrainingPipeline(pl.LightningModule):
         self, outputs: Dict[str, Any], batch: Any, batch_idx: int
     ) -> None:
         if self.global_rank == 0:
-            logging.info("START on_train_batch_end")
+            logging.debug("START on_train_batch_end")
         if self.global_rank == 0:
-            logging.info("on_train_batch_end")
+            logging.debug("on_train_batch_end")
         self.model.on_train_batch_end(batch)
 
         average_time_frequency = 10
         if self.global_rank == 0 and batch_idx % average_time_frequency == 0:
             delta = time.perf_counter() - self.timer
-            logging.info(
+            logging.debug(
                 f"Average time per batch {batch_idx} took {delta / (batch_idx + 1)} seconds"
             )
         if self.global_rank == 0:
-            logging.info("END on_train_batch_end")
+            logging.debug("END on_train_batch_end")
 
     def configure_optimizers(self) -> List[torch.optim.Optimizer]:
         """
@@ -252,8 +252,7 @@ class TrainingPipeline(pl.LightningModule):
 
     def training_step(self, train_batch: Dict[str, Any], batch_idx: int) -> dict:
         logging.debug("START training_step")
-        print("--------------------------------")
-        # print(f"Train batch urls: {train_batch['__url__']}")
+        logging.debug("--------------------------------")
         if self.automatic_optimization:
             model_forward_start_time = time.perf_counter()
             model_output = self.model(
@@ -262,14 +261,22 @@ class TrainingPipeline(pl.LightningModule):
                 forward_count=self.training_forward_pass_counter,
             )
             model_forward_end_time = time.perf_counter()
-            logging.info(
+            logging.debug(
                 f"Model forward time: {model_forward_end_time - model_forward_start_time} seconds"
             )
             self.training_forward_pass_counter += 1
 
             loss = model_output["loss"]
-            logging.info(
+            logging.debug(
                 f"loss: {loss}, global_rank:{self.global_rank}, local_rank:{self.local_rank}"
+            )
+            self.log(
+                "loss",
+                loss,
+                prog_bar=True,
+                on_step=True,
+                on_epoch=False,
+                logger=False,
             )
 
             # get all loss-liked quantities
@@ -374,7 +381,7 @@ class TrainingPipeline(pl.LightningModule):
                 current_opt.step()
                 current_opt.zero_grad()
 
-        logging.info("END training_step")
+        logging.debug("END training_step")
         return outputs
 
     def validation_step(self, val_batch: Dict[str, Any], val_idx: int) -> dict:
