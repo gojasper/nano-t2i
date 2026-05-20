@@ -1,0 +1,167 @@
+phases:
+  - name: nano-512
+    model:
+      timestep_sampling: log_normal
+      logit_mean: 0.0
+      logit_std: 1.0
+      prediction_type: flow_matching
+      tokenizer_max_length: 256
+      tokenizer_padding: "longest"
+      num_layers: 5
+      num_single_layers: 5
+      patch_size: 1
+      num_attention_heads: 24
+      attention_head_dim: 128
+      mlp_ratio: 2.0
+      text_embedder: qwen3-4b
+      use_context_rms_norm: True
+      share_modulation: True
+      use_adaln_learnable_embedding: True
+      adaln_zero_init: True
+      vae_input_key: "latent"
+      conditioner_input_key: "text"
+      base_resolution: [32, 32]
+    datasets:
+      train:
+        mappers:
+          - name: text_to_image
+            bucket: jasperai/monet
+            shards:
+              - v1.1.0/synthetic
+            probability: 1.0
+            mapper_kwargs:
+              dataset_name: text_to_image
+              image_key: "jpg"
+              text_embedding_key: null #"qwen3-4b-instruct-2507_longest_caption.pth"
+              verbose: False
+              captioners_names:
+                - caption_original
+              captioners_probabilities:
+                - 1.0
+            shuffle_before_split_by_node_buffer_size: 1
+            shuffle_before_split_by_workers_buffer_size: 1
+            shuffle_before_filter_mappers_buffer_size: 10
+            shuffle_after_filter_mappers_buffer_size: 10
+            num_workers: 10
+            pixel_budgets: null
+            budgets_probabilities: null
+
+        global_batch_sizes: [64]
+        global_pixel_budgets: [262144]
+        global_aspect_ratios: [1]
+        global_intervals: [64]
+        global_probabilities: [1.0]
+        decoder: null # trained on latents, not images
+
+      validation:
+        null
+
+    training:
+      learning_rate: 1e-4
+      optimizer_name: "AdamW"
+      max_steps: 200000
+      bucket_ckpts: jasper-ai-research
+      save_interval: 100000
+      save_interval_for_eval: 200000
+      grad_accumulation: 1
+      val_check_interval: null
+      limit_val_batches: 1
+      gradient_clip_val: 0.2
+      resume_from_checkpoint: True
+      strategy: ddp_find_unused_parameters_true
+      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release/phase-1
+      only_denoiser_weight_reload: False
+      start_ckpt: nano-t2i/checkpoints/t2i/release/phase-1/last.ckpt
+
+    logging:
+      wandb_project: Nano-T2I
+      run_name: nano-512-4
+      wandb_tags: ["nano", "qwen4b", "lognorm(0.0)", "sharing", "learnable-embed", "zero-init", "pretrain_split"]
+      num_steps: [50]
+      guidance_scale: [5]
+      log_interval: 1000
+      shift_value: [5]
+
+  - name: nano-1024
+    model:
+      timestep_sampling: log_normal
+      logit_mean: 0.0
+      logit_std: 1.0
+      prediction_type: flow_matching
+      tokenizer_max_length: 256
+      tokenizer_padding: "longest"
+      num_layers: 5
+      num_single_layers: 5
+      patch_size: 1
+      num_attention_heads: 24
+      attention_head_dim: 128
+      mlp_ratio: 2.0
+      axes_dims_rope: [16, 56, 56]
+      use_context_rms_norm: True
+      share_modulation: True
+      use_adaln_learnable_embedding: True
+      adaln_zero_init: True
+      text_embedder: qwen3-4b
+      vae_input_key: "image"
+      conditioner_input_key: "text"
+      base_resolution: [32, 32]
+    datasets:
+      train:
+        mappers:
+          - name: text_to_image
+            bucket: jasperai/monet
+            shards:
+              - v1.1.0/synthetic
+            probability: 1.0
+            mapper_kwargs:
+              dataset_name: text_to_image
+              image_key: "jpg"
+              text_embedding_key: null #"qwen3-4b-instruct-2507_longest_caption.pth"
+              verbose: False
+              captioners_names:
+                - caption_original
+              captioners_probabilities:
+                - 1.0
+            shuffle_before_split_by_node_buffer_size: 1
+            shuffle_before_split_by_workers_buffer_size: 1
+            shuffle_before_filter_mappers_buffer_size: 10
+            shuffle_after_filter_mappers_buffer_size: 10
+            num_workers: 10
+            pixel_budgets: null
+            budgets_probabilities: null
+
+        global_batch_sizes: [4]
+        global_pixel_budgets: [1048576]
+        global_aspect_ratios: [1]
+        global_intervals: [64]
+        global_probabilities: [1.0]
+        decoder: pil
+
+      validation:
+        null
+
+    training:
+      learning_rate: 1e-4
+      optimizer_name: "AdamW"
+      max_steps: 500000
+      bucket_ckpts: jasper-ai-research
+      save_interval: 50000
+      save_interval_for_eval: 50000
+      grad_accumulation: 4
+      val_check_interval: null
+      limit_val_batches: 1
+      gradient_clip_val: 0.2
+      resume_from_checkpoint: True
+      strategy: ddp_find_unused_parameters_true
+      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release/phase-2
+      only_denoiser_weight_reload: True
+      start_ckpt: nano-t2i/checkpoints/t2i/release/phase-1/last.ckpt
+
+    logging:
+      wandb_project: Nano-T2I
+      run_name: nano-1024-4
+      wandb_tags: ["nano", "qwen4b", "lognorm(0.0)", "sharing", "learnable-embed", "zero-init", "pretrain_split"]
+      num_steps: [50]
+      guidance_scale: [5]
+      log_interval: 500
+      shift_value: [5]

@@ -1,0 +1,22 @@
+# envs
+envs/*
+
+# extensions
+*.pyc
+*.ckpt
+*.pth
+*.safetensors
+*.sh
+*.log
+
+
+# cache
+__pycache__
+src/nano_t2i.egg-info
+build
+*.DS_Store
+**/wandb/
+**/configs/t2i/
+
+# directories
+logs/
