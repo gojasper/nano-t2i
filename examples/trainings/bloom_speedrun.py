@@ -13,6 +13,14 @@ import torch
 import webdataset as wds
 import yaml
 from bloom_mappers import generic_mappers
+from pytorch_lightning import Trainer, loggers
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.strategies import FSDPStrategy
+from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
+from torch.distributed.fsdp.wrap import ModuleWrapPolicy
+from torchvision.transforms import Compose, Normalize, Resize
+from transformers import AutoImageProcessor, AutoModel
+
 from nano_t2i.data.datasets import (
     DataModuleConfig,
     MultiDataModule,
@@ -53,13 +61,6 @@ from nano_t2i.models.vae import (
 )
 from nano_t2i.trainer import TrainingConfig, TrainingPipeline
 from nano_t2i.trainer.loggers import WandbSampleLogger
-from pytorch_lightning import Trainer, loggers
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
-from pytorch_lightning.strategies import FSDPStrategy
-from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from torch.distributed.fsdp.wrap import ModuleWrapPolicy
-from torchvision.transforms import Compose, Normalize, Resize
-from transformers import AutoImageProcessor, AutoModel
 
 PIL.Image.MAX_IMAGE_PIXELS = 933120000
 
