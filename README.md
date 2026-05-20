@@ -44,6 +44,46 @@ python examples/trainings/training.py examples/trainings/configs/t2i/nano.yaml
 
 Once the training is launched, you can visualize the training progress on [wandb](https://wandb.ai). Checkpoints will be saved in the `examples/trainings/nano-t2i/checkpoints` directory.
 
+Below is an example of the training progress for two training runs 1) on a single H200 GPU and 2) on a 8 H200 GPUs.
+
+<figure>
+	<p align="center">
+        	<img style="width:400px;" src="assets/training_curves.jpg">
+	 </p>
+</figure>
+
+### Examples of generated images
+
+
+<details>
+<summary><strong>After 1 day of training</strong></summary>
+
+#### On a single H200 GPU
+
+<figure>
+	<p align="center">
+        	<img style="width:200px;" src="assets/gen_single_1_day_3.jpg">
+          <img style="width:200px;" src="assets/gen_single_1_day_1.jpg">
+          <img style="width:200px;" src="assets/gen_single_1_day_2.jpg">
+          <img style="width:200px;" src="assets/gen_single_1_day_0.jpg">
+	 </p>
+</figure>
+
+#### On 8 H200 GPUs
+
+<figure>
+	<p align="center">
+        	<img style="width:200px;" src="assets/gen_node_1_day_3.jpg">
+          <img style="width:200px;" src="assets/gen_node_1_day_1.jpg">
+          <img style="width:200px;" src="assets/gen_node_1_day_2.jpg">
+          <img style="width:200px;" src="assets/gen_node_1_day_0.jpg">
+	 </p>
+</figure>
+
+</details>
+
+
+
 ## Demo
 
 You can find a gradio demo in `examples/inference/demo/t2i_demo.py` allowing you to generate images from the trained model. In this demo, you can select the model config file and the checkpoint name to use.
