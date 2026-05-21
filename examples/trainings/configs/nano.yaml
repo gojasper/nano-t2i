@@ -69,9 +69,9 @@ phases:
       gradient_clip_val: 0.2
       resume_from_checkpoint: True
       strategy: ddp_find_unused_parameters_true
-      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release/phase-1
+      save_ckpt_path: logs/nano/phase-1
       only_denoiser_weight_reload: False
-      start_ckpt: nano-t2i/checkpoints/t2i/release/phase-1/last.ckpt
+      start_ckpt: null
 
     logging:
       wandb_project: Nano-T2I
@@ -153,9 +153,9 @@ phases:
       gradient_clip_val: 0.2
       resume_from_checkpoint: True
       strategy: ddp_find_unused_parameters_true
-      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release/phase-2
+      save_ckpt_path: logs/nano/phase-2/
       only_denoiser_weight_reload: True
-      start_ckpt: nano-t2i/checkpoints/t2i/release/phase-1/last.ckpt
+      start_ckpt: logs/nano/phase-1/last.ckpt
 
     logging:
       wandb_project: Nano-T2I

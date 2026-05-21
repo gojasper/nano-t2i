@@ -107,7 +107,7 @@ class DiffusionModel(BaseModel):
         else:
             z = batch[self.input_key]
 
-        print("Time to get VAE embedding", time.perf_counter() - start_time)
+        logging.debug(f"Time to get VAE embedding {time.perf_counter() - start_time}")
 
         start_time_conditioning = time.perf_counter()
         conditioning = self._get_conditioning(
@@ -115,7 +115,9 @@ class DiffusionModel(BaseModel):
             *args,
             **kwargs,
         )
-        print("Time to get conditioning", time.perf_counter() - start_time_conditioning)
+        logging.debug(
+            f"Time to get conditioning {time.perf_counter() - start_time_conditioning}"
+        )
 
         # Sample noise
         noise = torch.randn_like(z)
@@ -127,7 +129,9 @@ class DiffusionModel(BaseModel):
             n_samples=z.shape[0],
             device=z.device,
         ).to(z.dtype)
-        print("Time to sample timestep", time.perf_counter() - start_timestep_sampling)
+        logging.debug(
+            f"Time to sample timestep {time.perf_counter() - start_timestep_sampling}"
+        )
 
         noisy_sample = (
             timestep.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1) * noise
@@ -142,20 +146,20 @@ class DiffusionModel(BaseModel):
             conditioning=conditioning,
         )
         prediction = denoiser_output.sample
-        print("Time to predict noise", time.perf_counter() - start_time_dit)
+        logging.debug(f"Time to predict noise {time.perf_counter() - start_time_dit}")
 
         target = noise - z
 
         # Compute loss
         start_time_latent_loss = time.perf_counter()
         loss = self.latent_loss(prediction, target)
-        print(
-            "Time to compute latent loss", time.perf_counter() - start_time_latent_loss
+        logging.debug(
+            f"Time to compute latent loss {time.perf_counter() - start_time_latent_loss}"
         )
         out = {"loss": loss.mean(), "latent_loss": loss.mean()}
 
-        print(f"out: {out}")
-        print(f"Forward time: {time.perf_counter() - start_time}")
+        logging.debug(f"out: {out}")
+        logging.debug(f"Forward time: {time.perf_counter() - start_time}")
         return out
 
     def latent_loss(self, prediction, model_input):
@@ -272,7 +276,7 @@ class DiffusionModel(BaseModel):
             shift_value=shift_value,
         )
 
-        print(f"timesteps sampling: {timesteps}, shift_value: {shift_value}")
+        logging.debug(f"timesteps sampling: {timesteps}, shift_value: {shift_value}")
 
         # Get conditioning
         conditioning = self._get_conditioning(
@@ -368,8 +372,8 @@ class DiffusionModel(BaseModel):
             else len(batch[self.input_key])
         )
 
-        print(f"N: {N}")
-        print(f"batch[self.input_key]: {batch[self.input_key].shape}")
+        logging.debug(f"N: {N}")
+        logging.debug(f"batch[self.input_key]: {batch[self.input_key].shape}")
 
         if conditioner_inputs is not None:
             max_conditioning_samples = min(
@@ -415,7 +419,7 @@ class DiffusionModel(BaseModel):
                     )
                 else:
                     input_shape = batch[self.vae.config.input_key].shape[-3:]
-                    print(f"input_shape: {input_shape}")
+                    logging.debug(f"input_shape: {input_shape}")
             else:
                 raise ValueError(
                     "input_shape must be passed when no VAE is used in the model"
@@ -428,7 +432,7 @@ class DiffusionModel(BaseModel):
                     # Log samples
                     z = torch.randn(N, *input_shape).to(self.device, dtype=self.dtype)
 
-                    print(f"z: {z.shape}")
+                    logging.debug(f"z: {z.shape}")
 
                     logging.debug(
                         f"Sampling {N} samples: steps={num_step}, guidance_scale={guidance}, shift_value={shift_value}"

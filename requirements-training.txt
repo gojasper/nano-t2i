@@ -5,7 +5,7 @@ black==24.2.0
 cloudpathlib>=0.21.1
 einops==0.7.0
 fire>=0.5.0
-gradio==5.6.0
+gradio==6.14.0
 isort==5.13.2
 lightning==2.5.1
 opencv-python==4.9.0.80

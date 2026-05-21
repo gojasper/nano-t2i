@@ -5,9 +5,9 @@ build-backend = "hatchling.build"
 [project]
 name = "nano_t2i"
 dynamic = ["dependencies", "optional-dependencies"]
-description = "Clipdrop Research Diffusion codebase"
+description = "Nano T2I training codebase"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 authors = [
     { name = "Clement Chadebec", email = "clement.chadebec@jasper.ai" },
     { name = "Benjamin Aubin", email = "benjamin.aubin@jasper.ai" },
@@ -17,8 +17,6 @@ maintainers = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
