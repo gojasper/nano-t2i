@@ -1,0 +1,222 @@
+phases:
+  - name: nano-512
+    model:
+      timestep_sampling: log_normal
+      logit_mean: 0.0
+      logit_std: 1.0
+      prediction_type: flow_matching
+      tokenizer_max_length: 256
+      tokenizer_padding: "longest"
+      num_layers: 5
+      num_single_layers: 5
+      patch_size: 1
+      num_attention_heads: 24
+      attention_head_dim: 128
+      mlp_ratio: 2.0
+      text_embedder: qwen3-4b
+      use_context_rms_norm: True
+      share_modulation: True
+      use_adaln_learnable_embedding: True
+      adaln_zero_init: True
+      vae_input_key: "latent"
+      conditioner_input_key: "text"
+      base_resolution: [32, 32]
+    datasets:
+      train:
+        mappers:
+          - name: text_to_image
+            bucket: jasper-ai-research
+            shards:
+              - datasets/synthetic_text_to_image/imagenet-1k-processed/train-v4/klein/v3/{000000..001291}.tar
+              - datasets/synthetic_text_to_image/improved-flux-prompts/z-image/v3/{000000..000558}.tar
+              - datasets/synthetic_text_to_image/multigen20m/v2/klein/v4/{000000..001652}.tar
+              - datasets/synthetic_text_to_image/multigen20m/v2/z-image/v3/{000000..001112}.tar
+              - datasets/synthetic_text_to_image/rosemary/v31/z-image/v3/{000000..002066}.tar
+              - datasets/synthetic_text_to_image/rosemary/v32/klein/v3/{000000..000928}.tar
+              - datasets/synthetic_text_to_image/rosemary/v32/z-image/v3/{000000..000553}.tar
+              - datasets/synthetic_text_to_image/tulip/v21/z-image/v3/{000000..003076}.tar
+            probability: 1.0
+            mapper_kwargs:
+              dataset_name: text_to_image
+              image_key: "webp"
+              text_embedding_key: "qwen3-4b-instruct-2507_longest_caption.pth"
+              url_key: "url"
+              verbose: False
+              upsample_prompts: True
+              url_filters_strings:
+                - media.gettyimages.com
+                - dreamstime.com
+                - image.shutterstock.com
+              greater_than_filters_keys:
+                - resolution
+              greater_than_filters_values:
+                - 65536
+              nsfw_filters_keys:
+                - nsfw_bumble
+                - nsfw_df
+                - nsfw_falcon
+                - wk_df
+                - wk_laion
+              nsfw_filters_scores_threshold:
+                - 0.5
+                - 0.34
+                - 0.5
+                - 0.30
+              captioners_names:
+                - caption
+              captioners_probabilities:
+                - 1.0
+            shuffle_before_split_by_node_buffer_size: 1
+            shuffle_before_split_by_workers_buffer_size: 1
+            shuffle_before_filter_mappers_buffer_size: 10
+            shuffle_after_filter_mappers_buffer_size: 10
+            num_workers: 10
+            pixel_budgets: null
+            budgets_probabilities: null
+
+        global_batch_sizes: [64]
+        global_pixel_budgets: [262144]
+        global_aspect_ratios: [1]
+        global_intervals: [64]
+        global_probabilities: [1.0]
+        decoder: null # trained on latents, not images
+
+      validation:
+        null
+
+    training:
+      learning_rate: 1e-4
+      optimizer_name: "AdamW"
+      max_steps: 1000000
+      bucket_ckpts: jasper-ai-research
+      save_interval: 10000
+      save_interval_for_eval: 200000
+      grad_accumulation: 4
+      val_check_interval: null
+      limit_val_batches: 1
+      gradient_clip_val: 0.2
+      resume_from_checkpoint: True
+      strategy: ddp_find_unused_parameters_true
+      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release/phase-1
+      only_denoiser_weight_reload: False
+      start_ckpt: nano-t2i/checkpoints/t2i/release/phase-1/last.ckpt
+
+
+    logging:
+      wandb_project: Nano-T2I
+      run_name: dbl5-sgn5-h24-d128-sharing-learnable-embed-zero-init-qwen4b-lognorm(0.0)-pico-4
+      wandb_tags: ["pico", "qwen4b", "lognorm(0.0)", "sharing", "learnable-embed", "zero-init", "pretrain_split"]
+      num_steps: [50]
+      guidance_scale: [5]
+      log_interval: 1000
+      shift_value: [5]
+
+  - name: nano-1024
+    model:
+      timestep_sampling: log_normal
+      logit_mean: 0.0
+      logit_std: 1.0
+      prediction_type: flow_matching
+      tokenizer_max_length: 256
+      tokenizer_padding: "longest"
+      num_layers: 5
+      num_single_layers: 5
+      patch_size: 1
+      num_attention_heads: 24
+      attention_head_dim: 128
+      mlp_ratio: 2.0
+      axes_dims_rope: [16, 56, 56]
+      use_context_rms_norm: True
+      share_modulation: True
+      use_adaln_learnable_embedding: True
+      adaln_zero_init: True
+      text_embedder: qwen3-4b
+      vae_input_key: "latent"
+      conditioner_input_key: "text"
+      base_resolution: [32, 32]
+    datasets:
+      train:
+        mappers:
+          - name: text_to_image
+            bucket: jasper-ai-research
+            shards:
+              - datasets/synthetic_text_to_image/imagenet-1k-processed/train-v4/klein/v3/{000000..001291}.tar
+              - datasets/synthetic_text_to_image/improved-flux-prompts/z-image/v3/{000000..000558}.tar
+              - datasets/synthetic_text_to_image/multigen20m/v2/klein/v4/{000000..001652}.tar
+              - datasets/synthetic_text_to_image/multigen20m/v2/z-image/v3/{000000..001112}.tar
+              - datasets/synthetic_text_to_image/rosemary/v31/z-image/v3/{000000..002066}.tar
+              - datasets/synthetic_text_to_image/rosemary/v32/klein/v3/{000000..000928}.tar
+              - datasets/synthetic_text_to_image/rosemary/v32/z-image/v3/{000000..000553}.tar
+              - datasets/synthetic_text_to_image/tulip/v21/z-image/v3/{000000..003076}.tar
+            probability: 1.0
+            mapper_kwargs:
+              dataset_name: text_to_image
+              image_key: "webp"
+              url_key: "url"
+              verbose: False
+              url_filters_strings:
+                - media.gettyimages.com
+                - dreamstime.com
+                - image.shutterstock.com
+              greater_than_filters_keys:
+                - resolution
+              greater_than_filters_values:
+                - 65536
+              nsfw_filters_keys:
+                - nsfw_bumble
+                - nsfw_df
+                - nsfw_falcon
+                - wk_df
+                - wk_laion
+              nsfw_filters_scores_threshold:
+                - 0.5
+                - 0.34
+                - 0.5
+                - 0.30
+              captioners_names:
+                - caption
+              captioners_probabilities:
+                - 1.0
+            shuffle_before_split_by_node_buffer_size: 1
+            shuffle_before_split_by_workers_buffer_size: 1
+            shuffle_before_filter_mappers_buffer_size: 10
+            shuffle_after_filter_mappers_buffer_size: 10
+            num_workers: 6
+            pixel_budgets: null
+            budgets_probabilities: null
+
+        global_batch_sizes: [4]
+        global_pixel_budgets: [1048576]
+        global_aspect_ratios: [1]
+        global_intervals: [64]
+        global_probabilities: [1.0]
+        decoder: pil
+
+      validation:
+        null
+
+    training:
+      learning_rate: 1e-4
+      optimizer_name: "AdamW"
+      max_steps: 1000000
+      bucket_ckpts: jasper-ai-research
+      save_interval: 10000
+      save_interval_for_eval: 500000
+      grad_accumulation: 4
+      val_check_interval: null
+      limit_val_batches: 1
+      gradient_clip_val: 0.2
+      resume_from_checkpoint: True
+      strategy: ddp_find_unused_parameters_true
+      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release/phase-2
+      only_denoiser_weight_reload: True
+      start_ckpt: nano-t2i/checkpoints/t2i/release/phase-1/last.ckpt
+
+    logging:
+      wandb_project: Nano-T2I
+      run_name: pico-1024-4
+      wandb_tags: ["nano", "qwen4b", "lognorm(0.0)", "sharing", "learnable-embed", "zero-init", "pretrain_split"]
+      num_steps: [50]
+      guidance_scale: [5]
+      log_interval: 500
+      shift_value: [5]

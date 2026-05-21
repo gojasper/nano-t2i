@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nano_t2i"
+dynamic = ["dependencies", "optional-dependencies"]
+description = "Nano T2I training codebase"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    { name = "Clement Chadebec", email = "clement.chadebec@jasper.ai" },
+    { name = "Benjamin Aubin", email = "benjamin.aubin@jasper.ai" },
+]
+maintainers = [
+    { name = "Clement Chadebec", email = "clement.chadebec@jasper.ai" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+version = "1.0.0"
+
+[project.urls]
+Homepage = "https://github.com/gojasper/nano-t2i"
+Documentation = "https://github.com/gojasper/nano-t2i/blob/main/README.md"
+Repository = "https://github.com/gojasper/nano-t2i"
+Issues = "https://github.com/gojasper/nano-t2i/issues"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
+
+[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
+training = ["requirements-training.txt"]
