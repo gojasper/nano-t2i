@@ -419,7 +419,7 @@ class TrainingPipeline(pl.LightningModule):
 
     def log_samples(self, batch: Dict[str, Any]):
         if self.global_rank == 0:
-            logging.info("START log_samples")
+            logging.debug("START log_samples")
         logs = self.model.log_samples(
             batch,
             **self.log_samples_model_kwargs,
@@ -440,5 +440,5 @@ class TrainingPipeline(pl.LightningModule):
                         logs[key] = batch[key]
 
         if self.global_rank == 0:
-            logging.info(f"END log_samples")
+            logging.debug(f"END log_samples")
         return logs

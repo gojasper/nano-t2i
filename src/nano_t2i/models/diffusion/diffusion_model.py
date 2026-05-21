@@ -276,7 +276,7 @@ class DiffusionModel(BaseModel):
             shift_value=shift_value,
         )
 
-        print(f"timesteps sampling: {timesteps}, shift_value: {shift_value}")
+        logging.debug(f"timesteps sampling: {timesteps}, shift_value: {shift_value}")
 
         # Get conditioning
         conditioning = self._get_conditioning(
@@ -372,8 +372,8 @@ class DiffusionModel(BaseModel):
             else len(batch[self.input_key])
         )
 
-        print(f"N: {N}")
-        print(f"batch[self.input_key]: {batch[self.input_key].shape}")
+        logging.debug(f"N: {N}")
+        logging.debug(f"batch[self.input_key]: {batch[self.input_key].shape}")
 
         if conditioner_inputs is not None:
             max_conditioning_samples = min(
@@ -419,7 +419,7 @@ class DiffusionModel(BaseModel):
                     )
                 else:
                     input_shape = batch[self.vae.config.input_key].shape[-3:]
-                    print(f"input_shape: {input_shape}")
+                    logging.debug(f"input_shape: {input_shape}")
             else:
                 raise ValueError(
                     "input_shape must be passed when no VAE is used in the model"
@@ -432,7 +432,7 @@ class DiffusionModel(BaseModel):
                     # Log samples
                     z = torch.randn(N, *input_shape).to(self.device, dtype=self.dtype)
 
-                    print(f"z: {z.shape}")
+                    logging.debug(f"z: {z.shape}")
 
                     logging.debug(
                         f"Sampling {N} samples: steps={num_step}, guidance_scale={guidance}, shift_value={shift_value}"

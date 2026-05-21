@@ -29,31 +29,26 @@
 
 `nano-t2i` is a small 1.3B DiT-style **flow-matching** text-to-image model with a Qwen3-4B text encoder and a latent VAE backbone, trained in two phases (512 → 1024) on the [MONET](https://huggingface.co/datasets/jasperai/monet) synthetic captioned-image dataset. It is built on top of [PyTorch Lightning](https://lightning.ai/) and [diffusers](https://github.com/huggingface/diffusers), and is designed to be:
 
-- **Small enough to fit on a single H200 GPU** (the `nano` config: 5 dual-stream + 5 single-stream DiT blocks, 24 attention heads, 128-dim heads, ~ to be filled in by training run).
+- **Small enough to fit on a single H200 GPU** (the `nano` config: 5 dual-stream + 5 single-stream DiT blocks, 24 attention heads, 128-dim heads).
 - **Hackable**: every architectural choice lives in the YAML config (see [`examples/trainings/configs/nano.yaml`](examples/trainings/configs/nano.yaml)).
 - **End-to-end reproducible**: from raw MONET shards to a working Gradio demo, in two commands.
 
 ## Results
 
-The figure below shows the training progress for two reference runs: 1×H200 and 8×H200. It is rendered directly from the W&B run history via [`scripts/plot_training_curves.py`](scripts/plot_training_curves.py) — no screenshots. See [Regenerating the training-curve plot](#regenerating-the-training-curve-plot) below.
+The figure below shows the training progress for two reference runs: 1×H200 and 8×H200.
 
 <p align="center">
   <img src="assets/training_curves.jpg" width="600" alt="nano-t2i training loss"/>
 </p>
 
-### Reproduced runs
+### Runs
 
 Cost is computed at **~\$3 / H200 / hour** (representative of major cloud GPU providers; check your own pricing). Click a thumbnail to open the full-resolution image.
 
 | Resolution | Hardware | Wall time | Cost  | Examples after 1 day of training |
 |---|---|---|---|---|
 | 512  | 1×H200 | 24 h | ~\$72  | <a href="assets/gen_single_1_day_3.jpg"><img src="assets/gen_single_1_day_3.jpg" width="140"></a> <a href="assets/gen_single_1_day_1.jpg"><img src="assets/gen_single_1_day_1.jpg" width="140"></a> <a href="assets/gen_single_1_day_2.jpg"><img src="assets/gen_single_1_day_2.jpg" width="140"></a> <a href="assets/gen_single_1_day_0.jpg"><img src="assets/gen_single_1_day_0.jpg" width="140"></a> |
-| 512  | 8×H200 | 3 h  | ~\$72  | <a href="assets/gen_node_1_day_3.jpg"><img src="assets/gen_node_1_day_3.jpg" width="140"></a> <a href="assets/gen_node_1_day_1.jpg"><img src="assets/gen_node_1_day_1.jpg" width="140"></a> <a href="assets/gen_node_1_day_2.jpg"><img src="assets/gen_node_1_day_2.jpg" width="140"></a> <a href="assets/gen_node_1_day_0.jpg"><img src="assets/gen_node_1_day_0.jpg" width="140"></a> |
-
-### Planned runs
-
-| Resolution | Hardware | Wall time | Cost   | Status |
-|---|---|---|---|---|
+| 512  | 1×H200 | 36 h | ~\$108 | in progress |
 | 1024 | 1×H200 | 48 h | ~\$144 | in progress |
 | 1024 | 1×H200 | 72 h | ~\$216 | in progress |
 | 1024 | 1×H200 | 96 h | ~\$288 | in progress |
@@ -68,10 +63,6 @@ Clone the repo first:
 git clone https://github.com/gojasper/nano-t2i.git
 cd nano-t2i
 ```
-
-The recommended install path is `uv`. Two extras are available:
-- (default) — inference only: `torch`, `torchvision`, `torchaudio`.
-- `[training]` — adds `lightning`, `diffusers`, `transformers`, `wandb`, `webdataset`, `gradio`, etc. (see [`requirements-training.txt`](requirements-training.txt)).
 
 ### With `uv` (recommended)
 
