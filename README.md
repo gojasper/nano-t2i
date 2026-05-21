@@ -139,10 +139,11 @@ If you use this code or the MONET dataset in your research, please cite:
 
 ```bibtex
 @article{aubin2026monet,
-  title   = {MONET: A Massive, Open, Non-redundant and Enriched Text-to-image Dataset},
-  author  = {Aubin, Benjamin and Quintana, Gonzalo I{\~n}aki and Tasar, Onur and Sreetharan, Sanjeev and Czerwinska, Urszula and Henry, Damien and Chadebec, Cl{\'e}ment},
-  year    = {2026},
-  note    = {Jasper Research}
+        title   = {MONET: A Massive, Open, Non-redundant and Enriched Text-to-image Dataset},
+        author  = {Aubin, Benjamin and Quintana, Gonzalo I{\~n}aki and Tasar, Onur and Sreetharan, Sanjeev and Czerwinska, Urszula and Henry, Damien and Chadebec, Cl{\'e}ment},
+        journal=  {arXiv preprint arXiv:2605.21272},
+        year    = {2026},
+        note    = {Jasper Research}
 }
 ```
 
