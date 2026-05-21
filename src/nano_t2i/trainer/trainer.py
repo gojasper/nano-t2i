@@ -81,13 +81,13 @@ class TrainingPipeline(pl.LightningModule):
 
     def on_fit_start(self) -> None:
         if self.global_rank == 0:
-            logging.info("START on_fit_start")
+            logging.debug("START on_fit_start")
         self.model.on_fit_start(device=self.device)
         self.training_forward_pass_counter = 0
         if self.global_rank == 0:
             self.timer = time.perf_counter()
         if self.global_rank == 0:
-            logging.info("END on_fit_start")
+            logging.debug("END on_fit_start")
         logging.info(
             f"Device rank: {self.global_rank}, node: {os.environ['SLURMD_NODENAME']}, device: {self.device}"
         )
