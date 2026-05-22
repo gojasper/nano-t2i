@@ -4,10 +4,6 @@
   <img src="assets/logo_nano_t2i.png" alt="nano-t2i" width="560"/>
 </p>
 
-<p align="center">
-  <img src="assets/monet.jpg" width="400"/>
-</p>
-
 **A minimal, hackable codebase to train a text-to-image (T2I) flow-matching model end-to-end on the [MONET dataset](https://huggingface.co/datasets/jasperai/monet) — on a single H200 GPU, under \$300.**
 
 <p align="center">
@@ -153,3 +149,8 @@ If you use this code or the MONET dataset in your research, please cite:
 ## License
 
 This codebase is released under the [Apache 2.0 License](LICENSE). The MONET dataset has its own license — please consult the [dataset card](https://huggingface.co/datasets/jasperai/monet) before redistributing.
+
+
+---
+> Curious how Jasper Research is used in production?  
+> <a href="https://developers.jasper.ai/docs/using-images?utm_source=JResearch&amp;utm_medium=CTA&amp;utm_campaign=MONET" target="_blank" rel="noopener noreferrer" aria-label="Discover Jasper APIs for image workflows">Discover Jasper APIs for image workflows</a>
