@@ -4,10 +4,6 @@
   <img src="assets/logo_nano_t2i.png" alt="nano-t2i" width="560"/>
 </p>
 
-<p align="center">
-  <img src="assets/monet.jpg" width="400"/>
-</p>
-
 **A minimal, hackable codebase to train a text-to-image (T2I) flow-matching model end-to-end on the [MONET dataset](https://huggingface.co/datasets/jasperai/monet) — on a single H200 GPU, under \$300.**
 
 <p align="center">
