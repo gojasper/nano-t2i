@@ -1,7 +1,7 @@
 # nano-t2i
 
 <p align="center">
-  <img src="assets/logo.png" alt="nano-t2i" width="560"/>
+  <img src="assets/logo_nano_t2i.png" alt="nano-t2i" width="560"/>
 </p>
 
 <p align="center">
@@ -10,7 +10,12 @@
 
 **A minimal, hackable codebase to train a text-to-image (T2I) flow-matching model end-to-end on the [MONET dataset](https://huggingface.co/datasets/jasperai/monet) — on a single H200 GPU, under \$300.**
 
----
+<p align="center">
+  <a href="https://arxiv.org/abs/2605.21272"><img src="https://img.shields.io/badge/arXiv-2605.21272-b31b1b.svg?logo=arxiv&logoColor=white" alt="Paper"></a>
+  <a href="https://huggingface.co/datasets/jasperai/monet"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-MONET-ffcc4d" alt="MONET Dataset"></a>
+  <a href="https://huggingface.co/spaces/jasperai/monet-retrieval"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-MONET%20Retrieval-ffcc4d" alt="MONET Retrieval"></a>
+  <a href="https://huggingface.co/spaces/jasperai/monet-umap"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-MONET%20UMAP-ffcc4d" alt="MONET UMAP"></a>
+</p>
 
 ## Table of contents
 
@@ -22,8 +27,6 @@
 - [Demo](#demo)
 - [Citation](#citation)
 - [License](#license)
-
----
 
 ## Overview
 
