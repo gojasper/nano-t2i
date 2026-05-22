@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import torch
 
@@ -12,6 +12,85 @@ from nano_t2i.models.embedders import (
 )
 from nano_t2i.models.transformers.tranformers import FluxTransformer
 from nano_t2i.models.vae import AutoencoderDCDiffusers, AutoencoderDCDiffusersConfig
+
+ProgressFn = Callable[[float, str], None]
+
+
+def _noop_progress(_frac: float, _desc: str) -> None:
+    pass
+
+
+def _build_denoiser(
+    patch_size: int,
+    num_layers: int,
+    num_single_layers: int,
+    attention_head_dim: int,
+    num_attention_heads: int,
+    context_dim: int,
+    axes_dims_rope: List[int],
+    mlp_ratio: float,
+    use_context_rms_norm: bool,
+    share_modulation: bool,
+    adaln_zero_init: bool,
+    use_adaln_learnable_embedding: bool,
+    base_resolution: Optional[Tuple[int, int]],
+) -> FluxTransformer:
+    denoiser_config = {
+        "patch_size": patch_size,
+        "in_channels": 32 * (patch_size**2),
+        "out_channels": 32 * (patch_size**2),
+        "num_layers": num_layers,
+        "num_single_layers": num_single_layers,
+        "attention_head_dim": attention_head_dim,
+        "num_attention_heads": num_attention_heads,
+        "context_dim": context_dim,
+        "axes_dims_rope": axes_dims_rope,
+        "rope_theta": 10_000,
+        "mlp_ratio": mlp_ratio,
+        "qkv_bias": True,
+        "use_context_rms_norm": use_context_rms_norm,
+        "share_modulation": share_modulation,
+        "adaln_zero_init": adaln_zero_init,
+        "use_adaln_learnable_embedding": use_adaln_learnable_embedding,
+        "base_resolution": base_resolution,
+    }
+    denoiser = FluxTransformer(**denoiser_config).to(torch.bfloat16)
+    num_params = sum(p.numel() for p in denoiser.parameters())
+    logging.info(f"Number of denoiser parameters: {num_params}")
+    return denoiser
+
+
+def _build_text_embedder(
+    text_embedder: str,
+    tokenizer_max_length: int,
+    tokenizer_padding: str,
+) -> QwenEmbedder:
+    if text_embedder != "qwen3-4b":
+        raise ValueError(f"Text embedder {text_embedder} not supported")
+
+    text_embedder_config = QwenEmbedderConfig(
+        version="Qwen/Qwen3-4B-Instruct-2507",
+        text_embedder_subfolder="",
+        tokenizer_subfolder="",
+        returns_attention_mask=True,
+        unconditional_conditioning_value="",
+        tokenizer_max_length=tokenizer_max_length,
+        tokenizer_padding=tokenizer_padding,
+        layer_idx=-2,
+        unconditional_conditioning_rate=0.1,
+    )
+    embedder = QwenEmbedder(text_embedder_config).to(torch.bfloat16)
+    embedder.freeze()
+    return embedder
+
+
+def _build_vae() -> AutoencoderDCDiffusers:
+    vae_config = AutoencoderDCDiffusersConfig(
+        version="Efficient-Large-Model/SANA1.5_1.6B_1024px_diffusers",
+        subfolder="vae",
+        tiling_size=(128, 128),
+    )
+    return AutoencoderDCDiffusers(vae_config).to(torch.bfloat16)
 
 
 def get_model(
@@ -36,77 +115,42 @@ def get_model(
     vae_input_key: str = "latent",
     conditioner_input_key: str = "text",
     base_resolution: Optional[Tuple[int, int]] = None,
+    progress_cb: ProgressFn = _noop_progress,
 ):
-
     if text_embedder == "qwen3-4b":
         context_dim = 2560
     else:
         raise ValueError(f"Text embedder {text_embedder} not supported")
 
-    denoiser_config = {
-        "patch_size": patch_size,
-        "in_channels": 32 * (patch_size**2),
-        "out_channels": 32 * (patch_size**2),
-        "num_layers": num_layers,
-        "num_single_layers": num_single_layers,
-        "attention_head_dim": attention_head_dim,
-        "num_attention_heads": num_attention_heads,
-        "context_dim": context_dim,
-        "axes_dims_rope": axes_dims_rope,
-        "rope_theta": 10_000,
-        "mlp_ratio": mlp_ratio,
-        "qkv_bias": True,
-        "use_context_rms_norm": use_context_rms_norm,
-        "share_modulation": share_modulation,
-        "adaln_zero_init": adaln_zero_init,
-        "use_adaln_learnable_embedding": use_adaln_learnable_embedding,
-        "base_resolution": base_resolution,
-    }
-
-    denoiser = FluxTransformer(**denoiser_config).to(torch.bfloat16)
-    logging.info(denoiser)
-
-    # count the number of parameters
-    num_params = sum(p.numel() for p in denoiser.parameters())
-    logging.info(f"Number of denoiser parameters: {num_params}")
-
-    conditioners = []
-    if text_embedder == "qwen3-4b":
-        text_embedder_config = QwenEmbedderConfig(
-            version="Qwen/Qwen3-4B-Instruct-2507",
-            text_embedder_subfolder="",
-            tokenizer_subfolder="",
-            returns_attention_mask=True,
-            unconditional_conditioning_value="",
-            tokenizer_max_length=tokenizer_max_length,
-            tokenizer_padding=tokenizer_padding,
-            layer_idx=-2,
-            unconditional_conditioning_rate=0.1,
-        )
-        text_embedder = QwenEmbedder(text_embedder_config).to(torch.bfloat16)
-        conditioners.append(text_embedder)
-    else:
-        raise ValueError(f"Text embedder {text_embedder} not supported")
-
-    # Freeze text encoders
-    text_embedder.freeze()
-
-    # Wrap conditioners
-    conditioner = ConditionerWrapper(
-        conditioners=conditioners,
-    ).to(torch.bfloat16)
-
-    ## VAE ##
-    # Get VAE model
-    vae_config = AutoencoderDCDiffusersConfig(
-        version="Efficient-Large-Model/SANA1.5_1.6B_1024px_diffusers",
-        subfolder="vae",
-        tiling_size=(128, 128),
+    progress_cb(0.02, "Building denoiser…")
+    denoiser = _build_denoiser(
+        patch_size=patch_size,
+        num_layers=num_layers,
+        num_single_layers=num_single_layers,
+        attention_head_dim=attention_head_dim,
+        num_attention_heads=num_attention_heads,
+        context_dim=context_dim,
+        axes_dims_rope=axes_dims_rope,
+        mlp_ratio=mlp_ratio,
+        use_context_rms_norm=use_context_rms_norm,
+        share_modulation=share_modulation,
+        adaln_zero_init=adaln_zero_init,
+        use_adaln_learnable_embedding=use_adaln_learnable_embedding,
+        base_resolution=base_resolution,
     )
-    vae = AutoencoderDCDiffusers(vae_config).to(torch.bfloat16)
 
-    ## Diffusion Model ##
-    # Get diffusion model
+    progress_cb(0.10, "Loading text encoder (Qwen3-4B)…")
+    embedder = _build_text_embedder(
+        text_embedder=text_embedder,
+        tokenizer_max_length=tokenizer_max_length,
+        tokenizer_padding=tokenizer_padding,
+    )
+    conditioner = ConditionerWrapper(conditioners=[embedder]).to(torch.bfloat16)
+
+    progress_cb(0.55, "Loading VAE (SANA1.5)…")
+    vae = _build_vae()
+
+    progress_cb(0.75, "Assembling diffusion model…")
     config = DiffusionModelConfig(
         input_key=vae_input_key,
         ucg_keys=[conditioner_input_key],
@@ -115,7 +159,6 @@ def get_model(
         logit_std=logit_std,
         prediction_type=prediction_type,
     )
-
     model = DiffusionModel(
         config,
         denoiser=denoiser,
@@ -163,9 +206,13 @@ def sample_from_batch(
 
 
 def get_model_from_config(
-    config: Dict[str, Any], ckpt_name: str = "last.ckpt", ckpt_path: str = "bloom"
+    config: Dict[str, Any],
+    ckpt_name: str = "last.ckpt",
+    ckpt_path: str = "bloom",
+    progress_cb: ProgressFn = _noop_progress,
 ):
-    model = get_model(**config)
+    model = get_model(**config, progress_cb=progress_cb)
+    progress_cb(0.85, "Loading checkpoint weights…")
     model, global_step = load_ckpt(
         path_ckpt=ckpt_path, model=model, ckpt_name=ckpt_name
     )

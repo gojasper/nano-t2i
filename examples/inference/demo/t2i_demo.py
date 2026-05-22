@@ -1,8 +1,10 @@
 import argparse
+import base64
 import logging
 import random
 import threading
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
 
 import gradio as gr
@@ -17,6 +19,17 @@ MAX_SEED = np.iinfo(np.int32).max
 MAX_IMAGE_SIZE = 1024
 DEFAULT_NUM_STEPS = 50
 DEFAULT_SHIFT_VALUE = 3.0
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+LOGO_PATH = REPO_ROOT / "assets" / "logo.png"
+
+
+def _logo_data_uri() -> Optional[str]:
+    if not LOGO_PATH.is_file():
+        return None
+    encoded = base64.b64encode(LOGO_PATH.read_bytes()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DTYPE = torch.bfloat16 if DEVICE == "cuda" else torch.float32
@@ -53,8 +66,11 @@ class ModelCache:
             if self._key == key and self._model is not None:
                 return self._model, self._global_step
 
-            if progress is not None:
-                progress(0.0, desc=f"Loading model for phase {key.phase}…")
+            def _progress(frac: float, desc: str) -> None:
+                if progress is not None:
+                    progress(frac, desc=f"[{key.phase}] {desc}")
+
+            _progress(0.0, "Reading config…")
             gr.Info(f"Loading model (phase={key.phase})…", duration=10)
 
             with open(key.config_path, "r") as f:
@@ -68,8 +84,13 @@ class ModelCache:
 
             ckpt_path = phase_cfg["training"]["save_ckpt_path"]
             model, global_step = get_model_from_config(
-                phase_cfg["model"], key.ckpt_name, ckpt_path
+                phase_cfg["model"],
+                key.ckpt_name,
+                ckpt_path,
+                progress_cb=_progress,
             )
+
+            _progress(0.95, f"Moving model to {DEVICE}…")
             model.eval()
             model.to(DEVICE, DTYPE)
             model.conditioner.to(DEVICE, DTYPE)
@@ -78,6 +99,7 @@ class ModelCache:
             self._key = key
             self._model = model
             self._global_step = global_step
+            _progress(1.0, "Model ready")
             gr.Info(
                 f"Model ready (phase={key.phase}, step={global_step}, device={DEVICE})."
             )
@@ -106,7 +128,7 @@ def infer(
     model_config_path,
     phase,
     ckpt_name,
-    progress=gr.Progress(),
+    progress=gr.Progress(track_tqdm=True),
 ):
     if not prompt or not prompt.strip():
         raise gr.Error("Prompt is empty.")
@@ -185,12 +207,20 @@ EXAMPLES_PROMPTS = [
 
 CSS = """
 #col-container { margin: 0 auto; max-width: 960px; }
+#logo-header { margin: 0 auto 8px auto; max-width: 720px; }
+#logo-header img { width: 100%; height: auto; display: block; }
 """
 
 
 def build_demo() -> gr.Blocks:
-    with gr.Blocks(css=CSS, title="Nano-T2I Demo") as demo:
-        gr.Markdown("# ⚡ Nano-T2I Demo")
+    with gr.Blocks(title="Nano-T2I Demo") as demo:
+        logo_uri = _logo_data_uri()
+        if logo_uri is not None:
+            gr.HTML(
+                f'<div id="logo-header"><img src="{logo_uri}" alt="Nano-T2I"/></div>'
+            )
+        else:
+            gr.Markdown("# Nano-T2I Demo")
 
         with gr.Column(elem_id="col-container"):
             with gr.Row():
@@ -299,7 +329,7 @@ def build_demo() -> gr.Blocks:
                 ckpt_name,
             ],
             outputs=[result, seed],
-            show_progress="minimal",
+            show_progress="full",
             trigger_mode="always_last",
         )
         stop_button.click(fn=None, cancels=[run_event])
@@ -322,5 +352,8 @@ def parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
     args = parse_args()
     build_demo().queue().launch(
-        server_name=args.host, server_port=args.port, share=args.share
+        server_name=args.host,
+        server_port=args.port,
+        share=args.share,
+        css=CSS,
     )
