@@ -17,6 +17,9 @@
   <a href="https://huggingface.co/spaces/jasperai/monet-umap"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-MONET%20UMAP-ffcc4d" alt="MONET UMAP"></a>
 </p>
 
+> Curious how Jasper Research is used in production?  
+> <a href="https://developers.jasper.ai/docs/using-images?utm_source=JResearch&amp;utm_medium=CTA&amp;utm_campaign=MONET" target="_blank" rel="noopener noreferrer" aria-label="Discover Jasper APIs for image workflows">Discover Jasper APIs for image workflows</a>
+
 ## Table of contents
 
 - [Overview](#overview)
