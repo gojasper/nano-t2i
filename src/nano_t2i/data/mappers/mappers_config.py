@@ -205,23 +205,23 @@ class UrlToDatasetNameConfig(BaseMapperConfig):
     Args:
         url_key (str): Key to use for the url. Defaults to None
         dataset_name_key (str): Key to use for the dataset name. Defaults to None
-        regex_pattern (str): Regex pattern to use for the dataset name. Defaults to r"^pipe:aws s3 cp s3://jasper-ai-research/datasets/([^/]+)(?:/([^/]+))?"
+        regex_pattern (str): Regex pattern to use for the dataset name. Defaults to r"^pipe:aws s3 cp s3://[^/]+/datasets/([^/]+)(?:/([^/]+))?"
 
     Example:
         url_key: "__url__"
         dataset_name_key: "dataset_name"
-        regex_pattern: r"^pipe:aws s3 cp s3://jasper-ai-research/datasets/([^/]+)(?:/([^/]+))?"
+        regex_pattern: r"^pipe:aws s3 cp s3://[^/]+/datasets/([^/]+)(?:/([^/]+))?"
 
         Input:
-            batch["__url__"] = "pipe:aws s3 cp s3://jasper-ai-research/datasets/rosemary/000000.tar"
+            batch["__url__"] = "pipe:aws s3 cp s3://my-bucket/datasets/my-dataset/000000.tar"
         Output:
-            batch["dataset_name"] = "rosemary"
+            batch["dataset_name"] = "my-dataset"
     """
 
     url_key: str = None
     dataset_name_key: str = None
     regex_pattern: str = (
-        r"^pipe:aws s3 cp s3://jasper-ai-research/datasets/([^/]+)(?:/([^/]+))?"
+        r"^pipe:aws s3 cp s3://[^/]+/datasets/([^/]+)(?:/([^/]+))?"
     )
 
 

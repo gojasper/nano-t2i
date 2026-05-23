@@ -79,8 +79,12 @@ def get_dataset_configs_from_config(config: dict):
             raise ValueError(f"Mapper name {mapper_name} not found in MAPPER_MAP")
 
         shards = mapper.get("shards", [])
-        bucket = mapper.get("bucket", "jasper-ai-research")
-        prefix = mapper.get("prefix", "pipe:hfcli buckets cp hf://buckets/jasperai/")
+        bucket = mapper.get("bucket")
+        if bucket is None:
+            raise ValueError(
+                "A `bucket` (Hugging Face) must be specified for each mapper in the training config."
+            )
+        prefix = mapper.get("prefix", "")
         if isinstance(shards, str):
             shards = [shards]
 
@@ -218,6 +222,7 @@ def get_model(
     vae_input_key: str = "latent",
     conditioner_input_key: str = "text",
     base_resolution: Optional[Tuple[int, int]] = None,
+    unconditional_conditioning_embed_path: Optional[str] = None,
 ):
 
     if text_embedder == "qwen3-4b":
@@ -254,10 +259,16 @@ def get_model(
 
     conditioners = []
     if conditioner_input_key == "text_embedding":
+        if unconditional_conditioning_embed_path is None:
+            raise ValueError(
+                "`unconditional_conditioning_embed_path` must be set when "
+                "`conditioner_input_key == 'text_embedding'`. It should point to a "
+                "pre-computed tensor of the empty-string text embedding (a .pth file)."
+            )
         text_embedder_config = IdentityEmbedderConfig(
             input_key=conditioner_input_key,
             unconditional_conditioning_value=torch.load(
-                "/data/clement/working/clipdrop-diffusion/examples/trainings/qwen_4b_empty_string_embed.pth"
+                unconditional_conditioning_embed_path
             ),
             unconditional_conditioning_rate=0.1,
         )
@@ -327,9 +338,9 @@ def get_trainer_and_pipeline(
     resume_from_checkpoint: bool = True,
     start_ckpt: str = None,
     save_ckpt_path: str = None,
-    bucket_ckpts: str = "jasper-ai-research",
+    bucket_ckpts: Optional[str] = None,
     run_name: str = None,
-    wandb_project: str = "Bloom-Pretraining",
+    wandb_project: str = "Nano-T2I",
     wandb_tags: List[str] = [],
     log_interval: int = 1000,
     val_check_interval: int = None,

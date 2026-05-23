@@ -208,7 +208,7 @@ def sample_from_batch(
 def get_model_from_config(
     config: Dict[str, Any],
     ckpt_name: str = "last.ckpt",
-    ckpt_path: str = "bloom",
+    ckpt_path: str = "checkpoints",
     progress_cb: ProgressFn = _noop_progress,
 ):
     model = get_model(**config, progress_cb=progress_cb)
