@@ -47,7 +47,7 @@ The figure below shows the training progress for two reference runs: 1×H200 and
 
 Cost is computed at **~\$3 / H200 / hour** (representative of major cloud GPU providers; check your own pricing). Click a thumbnail to open the full-resolution image.
 
-| Resolution | Hardware | Wall time | Cost  | Examples after 1 day of training |
+| Resolution | Hardware | Wall time | Cost  | Example samples |
 |---|---|---|---|---|
 | 512  | 1×H200 | 24 h | ~\$72  | <a href="assets/gen_single_1_day_3.jpg"><img src="assets/gen_single_1_day_3.jpg" width="140"></a> <a href="assets/gen_single_1_day_1.jpg"><img src="assets/gen_single_1_day_1.jpg" width="140"></a> <a href="assets/gen_single_1_day_2.jpg"><img src="assets/gen_single_1_day_2.jpg" width="140"></a> <a href="assets/gen_single_1_day_0.jpg"><img src="assets/gen_single_1_day_0.jpg" width="140"></a> |
 | 512  | 1×H200 | 36 h | ~\$108 | in progress |
