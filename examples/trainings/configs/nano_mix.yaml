@@ -195,7 +195,6 @@ phases:
       learning_rate: 1e-4
       optimizer_name: "AdamW"
       max_steps: 200000
-      bucket_ckpts: YOUR-BUCKET
       save_interval: 100000
       save_interval_for_eval: 100000
       grad_accumulation: 1
@@ -414,7 +413,6 @@ phases:
       learning_rate: 1e-4
       optimizer_name: "AdamW"
       max_steps: 100000
-      bucket_ckpts: YOUR-BUCKET
       save_interval: 50000
       save_interval_for_eval: 50000
       grad_accumulation: 4
