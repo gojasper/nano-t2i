@@ -40,6 +40,9 @@ The figure below shows the training progress for two reference runs: 1×H200 and
   <img src="assets/training_curves.jpg" width="600" alt="nano-t2i training loss"/>
 </p>
 
+*Note:* This codebase can be used to train bigger models by modifying the training configs and/or the code itself. In particular, it was used to train a 4B model the results of which are available in [our paper](https://arxiv.org/abs/2605.21272).
+
+
 ### Runs
 
 Cost is computed at **~\$3 / H200 / hour** (representative of major cloud GPU providers; check your own pricing). Click a thumbnail to open the full-resolution image.
