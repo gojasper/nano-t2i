@@ -221,7 +221,6 @@ def get_model(
     vae_input_key: str = "latent",
     conditioner_input_key: str = "text",
     base_resolution: Optional[Tuple[int, int]] = None,
-    unconditional_conditioning_embed_path: Optional[str] = None,
 ):
 
     if text_embedder == "qwen3-4b":
@@ -257,24 +256,7 @@ def get_model(
     logging.info(f"Number of denoiser parameters: {num_params}")
 
     conditioners = []
-    if conditioner_input_key == "text_embedding":
-        if unconditional_conditioning_embed_path is None:
-            raise ValueError(
-                "`unconditional_conditioning_embed_path` must be set when "
-                "`conditioner_input_key == 'text_embedding'`. It should point to a "
-                "pre-computed tensor of the empty-string text embedding (a .pth file)."
-            )
-        text_embedder_config = IdentityEmbedderConfig(
-            input_key=conditioner_input_key,
-            unconditional_conditioning_value=torch.load(
-                unconditional_conditioning_embed_path
-            ),
-            unconditional_conditioning_rate=0.1,
-        )
-        text_embedder = IdentityEmbedder(text_embedder_config).to(torch.bfloat16)
-        conditioners.append(text_embedder)
-
-    elif text_embedder == "qwen3-4b":
+    if text_embedder == "qwen3-4b":
         text_embedder_config = QwenEmbedderConfig(
             version="Qwen/Qwen3-4B-Instruct-2507",
             text_embedder_subfolder="",
