@@ -195,7 +195,6 @@ phases:
       learning_rate: 1e-4
       optimizer_name: "AdamW"
       max_steps: 200000
-      bucket_ckpts: jasper-ai-research
       save_interval: 100000
       save_interval_for_eval: 100000
       grad_accumulation: 1
@@ -204,9 +203,9 @@ phases:
       gradient_clip_val: 0.2
       resume_from_checkpoint: True
       strategy: ddp_find_unused_parameters_true
-      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release_mix/phase-1
+      save_ckpt_path: logs/nano_mix/phase-1
       only_denoiser_weight_reload: False
-      start_ckpt: nano-t2i/checkpoints/t2i/release_mix/phase-1/last.ckpt
+      start_ckpt: null
 
     logging:
       wandb_project: Nano-T2I
@@ -414,7 +413,6 @@ phases:
       learning_rate: 1e-4
       optimizer_name: "AdamW"
       max_steps: 100000
-      bucket_ckpts: jasper-ai-research
       save_interval: 50000
       save_interval_for_eval: 50000
       grad_accumulation: 4
@@ -423,9 +421,9 @@ phases:
       gradient_clip_val: 0.2
       resume_from_checkpoint: True
       strategy: ddp_find_unused_parameters_true
-      save_ckpt_path: /data/clement/working/nano/nano-t2i/examples/trainings/nano-t2i/checkpoints/t2i/release_mix/phase-2
+      save_ckpt_path: logs/nano_mix/phase-2
       only_denoiser_weight_reload: True
-      start_ckpt: nano-t2i/checkpoints/t2i/release_mix/phase-1/last.ckpt
+      start_ckpt: logs/nano_mix/phase-1/last.ckpt
 
     logging:
       wandb_project: Nano-T2I

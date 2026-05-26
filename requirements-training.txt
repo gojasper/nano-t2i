@@ -1,7 +1,8 @@
 accelerate>=1.2.1
-diffusers==0.37.0
+diffusers==0.38.0
+safetensors>=0.8.0rc0
 albumentations==2.0.3
-black==24.2.0
+black==26.3.1
 cloudpathlib>=0.21.1
 einops==0.7.0
 fire>=0.5.0

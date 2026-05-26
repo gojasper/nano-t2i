@@ -11,11 +11,6 @@ import torch
 import yaml
 from huggingface_hub import HfFileSystem
 from mappers import generic_mappers
-from pytorch_lightning import Trainer, loggers
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
-from pytorch_lightning.strategies import FSDPStrategy
-from torch.distributed.fsdp.wrap import ModuleWrapPolicy
-
 from nano_t2i.data.datasets import (
     DataModuleConfig,
     MultiDataModule,
@@ -43,6 +38,10 @@ from nano_t2i.models.transformers.tranformers import FluxTransformer
 from nano_t2i.models.vae import AutoencoderDCDiffusers, AutoencoderDCDiffusersConfig
 from nano_t2i.trainer import TrainingConfig, TrainingPipeline
 from nano_t2i.trainer.loggers import WandbSampleLogger
+from pytorch_lightning import Trainer, loggers
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.strategies import FSDPStrategy
+from torch.distributed.fsdp.wrap import ModuleWrapPolicy
 
 PIL.Image.MAX_IMAGE_PIXELS = 933120000
 fs = HfFileSystem()
@@ -79,8 +78,12 @@ def get_dataset_configs_from_config(config: dict):
             raise ValueError(f"Mapper name {mapper_name} not found in MAPPER_MAP")
 
         shards = mapper.get("shards", [])
-        bucket = mapper.get("bucket", "jasper-ai-research")
-        prefix = mapper.get("prefix", "pipe:hfcli buckets cp hf://buckets/jasperai/")
+        bucket = mapper.get("bucket")
+        if bucket is None:
+            raise ValueError(
+                "A `bucket` (Hugging Face) must be specified for each mapper in the training config."
+            )
+        prefix = mapper.get("prefix", "")
         if isinstance(shards, str):
             shards = [shards]
 
@@ -253,18 +256,7 @@ def get_model(
     logging.info(f"Number of denoiser parameters: {num_params}")
 
     conditioners = []
-    if conditioner_input_key == "text_embedding":
-        text_embedder_config = IdentityEmbedderConfig(
-            input_key=conditioner_input_key,
-            unconditional_conditioning_value=torch.load(
-                "/data/clement/working/clipdrop-diffusion/examples/trainings/qwen_4b_empty_string_embed.pth"
-            ),
-            unconditional_conditioning_rate=0.1,
-        )
-        text_embedder = IdentityEmbedder(text_embedder_config).to(torch.bfloat16)
-        conditioners.append(text_embedder)
-
-    elif text_embedder == "qwen3-4b":
+    if text_embedder == "qwen3-4b":
         text_embedder_config = QwenEmbedderConfig(
             version="Qwen/Qwen3-4B-Instruct-2507",
             text_embedder_subfolder="",
@@ -327,9 +319,8 @@ def get_trainer_and_pipeline(
     resume_from_checkpoint: bool = True,
     start_ckpt: str = None,
     save_ckpt_path: str = None,
-    bucket_ckpts: str = "jasper-ai-research",
     run_name: str = None,
-    wandb_project: str = "Bloom-Pretraining",
+    wandb_project: str = "Nano-T2I",
     wandb_tags: List[str] = [],
     log_interval: int = 1000,
     val_check_interval: int = None,

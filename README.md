@@ -26,7 +26,7 @@
 
 ## Overview
 
-`nano-t2i` is a small 1.3B DiT-style **flow-matching** text-to-image model with a Qwen3-4B text encoder and a latent VAE backbone, trained in two phases (512 → 1024) on the [MONET](https://huggingface.co/datasets/jasperai/monet) synthetic captioned-image dataset. It is built on top of [PyTorch Lightning](https://lightning.ai/) and [diffusers](https://github.com/huggingface/diffusers), and is designed to be:
+`nano-t2i` is a small 1.3B DiT-style **flow-matching** text-to-image model with a Qwen3-4B text encoder and a latent VAE backbone, trained in two phases (512 → 1024) on the [MONET](https://huggingface.co/datasets/jasperai/monet) synthetic captioned-image dataset. The model relies on AdaLN sharing and is initialized using AdaLN-Zero. It is built on top of [PyTorch Lightning](https://lightning.ai/) and [diffusers](https://github.com/huggingface/diffusers), and is designed to be:
 
 - **Small enough to fit on a single H200 GPU** (the `nano` config: 5 dual-stream + 5 single-stream DiT blocks, 24 attention heads, 128-dim heads).
 - **Hackable**: every architectural choice lives in the YAML config (see [`examples/trainings/configs/nano.yaml`](examples/trainings/configs/nano.yaml)).
@@ -40,11 +40,14 @@ The figure below shows the training progress for two reference runs: 1×H200 and
   <img src="assets/training_curves.jpg" width="600" alt="nano-t2i training loss"/>
 </p>
 
+*Note:* This codebase can be used to train bigger models by modifying the training configs and/or the code itself. In particular, it was used to train a 4B model the results of which are available in [our paper](https://arxiv.org/abs/2605.21272).
+
+
 ### Runs
 
 Cost is computed at **~\$3 / H200 / hour** (representative of major cloud GPU providers; check your own pricing). Click a thumbnail to open the full-resolution image.
 
-| Resolution | Hardware | Wall time | Cost  | Examples after 1 day of training |
+| Resolution | Hardware | Wall time | Cost  | Example samples |
 |---|---|---|---|---|
 | 512  | 1×H200 | 24 h | ~\$72  | <a href="assets/gen_single_1_day_3.jpg"><img src="assets/gen_single_1_day_3.jpg" width="140"></a> <a href="assets/gen_single_1_day_1.jpg"><img src="assets/gen_single_1_day_1.jpg" width="140"></a> <a href="assets/gen_single_1_day_2.jpg"><img src="assets/gen_single_1_day_2.jpg" width="140"></a> <a href="assets/gen_single_1_day_0.jpg"><img src="assets/gen_single_1_day_0.jpg" width="140"></a> |
 | 512  | 1×H200 | 36 h | ~\$108 | in progress |

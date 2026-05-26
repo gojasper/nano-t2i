@@ -198,10 +198,15 @@ def infer(
 # ---------------------------------------------------------------------------
 
 EXAMPLES_PROMPTS = [
-    "A raccoon trapped inside a glass jar full of colorful candies, the background is steamy with vivid colors",
-    "A moody black and white film portrait of an older artisan. The lighting is extremely dramatic high-key chiaroscuro, illuminating only one half of the face in sharp relief, casting the rest into deep, absolute shadow. The texture of their wrinkles and beard is hyper-detailed. Grainy analog film aesthetic.",
-    "A whimsical purple and pink dragon made of clay, showing tiny fingerprint marks and handcrafted texture, soft studio lighting, stop-motion aesthetic.",
+    "A dynamic street scene of Tokyo reimagined entirely as an abstract expressionist oil painting. The image must have violent, thick, impasto brushstrokes of primary colors (red, yellow, blue, black) applied messily and dynamically with a palette knife on raw canvas. Show the extreme texture of the paint.",
     "An ultra-detailed nocturnal landscape of a hidden tropical lagoon. The water glows with intense neon blue bioluminescence where it laps against jet-black volcanic sand. Towering ancient banyan trees with glowing hanging vines frame the scene. In the background, a massive silver moon hangs low over a calm ocean, casting a shimmering path on the waves. Fireflies create bokeh light clusters in the dark jungle shadows. Intricate textures of wet sand and leaf veins. Surreal atmospheric lighting, high contrast, 16k masterwork, Unreal Engine 5 render style.",
+    "A moody black and white film portrait of an older artisan. The lighting is extremely dramatic high-key chiaroscuro, illuminating only one half of the face in sharp relief, casting the rest into deep, absolute shadow. The texture of their wrinkles and beard is hyper-detailed. Grainy analog film aesthetic.",
+    "An intimate, close-up study of the surface of a tranquil water lily pond, inspired by Monet’s Nymphéas series. The composition has no horizon line, focusing entirely on the water. Floating clusters of white, pink, and yellow water lilies seem to merge with the blurry, shimmering reflections of the sky, clouds, and weeping willow branches. The atmosphere is quiet, silent, and meditative, captured through soft, blended dabs of paint.",
+    "A luminous aquarelle painting of a misty Venice canal. The style emphasizes translucent washes of paint, soft blending edges, and visible bleeding. The texture of the textured watercolor paper is prominent, and the light passes through the paint.",
+    "A vibrant pointillist painting of a garden in Paris. The entire scene is composed of millions of tiny, precise, distinct dots of pure, unmixed color that blend optically.",
+    "A flat-lay photograph of a white desk. Four objects are placed in the four corners: Top-left: a black coffee cup. Top-right: a green succulente in a purple pot. Bottom-left: a red apple. Bottom-right: a gold pen. In the exact center of the desk is a clean, empty white notebook.",
+    "A raccoon trapped inside a glass jar full of colorful candies, the background is steamy with vivid colors",
+    "A high-key, vibrant oil painting of a tropical rainforest. The image has thick, vibrant brushstrokes of primary colors (red, yellow, blue, green) applied dynamically with a palette knife on raw canvas. The texture of the paint is prominent, and the light passes through the paint.",
 ]
 
 
