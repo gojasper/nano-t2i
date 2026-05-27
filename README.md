@@ -4,8 +4,7 @@
   <img src="assets/logo_nano_t2i.png" alt="nano-t2i" width="560"/>
 </p>
 
-**A minimal, hackable codebase to train a text-to-image (T2I) flow-matching model end-to-end on the [MONET dataset](https://huggingface.co/datasets/jasperai/monet) — on a single H200 GPU, under \$300.**
-
+**A minimal, hackable, open codebase to train reproducibly a text-to-image (T2I) flow-matching model end-to-end on the [MONET dataset (Apache-2.0)](https://huggingface.co/datasets/jasperai/monet) — on a single H200 GPU, under \$300.**
 <p align="center">
   <a href="https://arxiv.org/abs/2605.21272"><img src="https://img.shields.io/badge/arXiv-2605.21272-b31b1b.svg?logo=arxiv&logoColor=white" alt="Paper"></a>
   <a href="https://huggingface.co/datasets/jasperai/monet"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-MONET-ffcc4d" alt="MONET Dataset"></a>
@@ -21,6 +20,7 @@
 - [Dataset](#dataset)
 - [Training](#training)
 - [Demo](#demo)
+- [Acknowledgements](#acknowledgements)
 - [Citation](#citation)
 - [License](#license)
 
@@ -30,7 +30,7 @@
 
 - **Small enough to fit on a single H200 GPU** (the `nano` config: 5 dual-stream + 5 single-stream DiT blocks, 24 attention heads, 128-dim heads).
 - **Hackable**: every architectural choice lives in the YAML config (see [`examples/trainings/configs/nano.yaml`](examples/trainings/configs/nano.yaml)).
-- **End-to-end reproducible**: from raw MONET shards to a working Gradio demo, in two commands.
+- **End-to-end reproducible**: from [MONET](https://huggingface.co/datasets/jasperai/monet) shards to a working Gradio demo, in two commands.
 
 ## Results
 
@@ -134,6 +134,10 @@ A Gradio demo is provided in [`examples/inference/demo/t2i_demo.py`](examples/in
 ```shell
 python examples/inference/demo/t2i_demo.py
 ```
+
+## Acknowledgements
+
+Built on the shoulders of [PyTorch](https://pytorch.org/), [PyTorch Lightning](https://lightning.ai/), [diffusers](https://github.com/huggingface/diffusers), [transformers](https://github.com/huggingface/transformers), [Qwen3](https://huggingface.co/Qwen), and the [SANA](https://github.com/NVlabs/Sana) VAE. The MONET dataset and reference runs are released by [Jasper Research](https://huggingface.co/jasperai).
 
 ## Citation
 
