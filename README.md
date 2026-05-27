@@ -4,7 +4,7 @@
   <img src="assets/logo_nano_t2i.png" alt="nano-t2i" width="560"/>
 </p>
 
-**A minimal, hackable codebase to train a text-to-image (T2I) flow-matching model end-to-end on the [MONET dataset](https://huggingface.co/datasets/jasperai/monet) — on a single H200 GPU, under \$300.**
+**A minimal, hackable codebase to train reproducible text-to-image (T2I) flow-matching models end-to-end on the [MONET dataset](https://huggingface.co/datasets/jasperai/monet) — on a single H200 GPU, under \$300.**
 
 <p align="center">
   <a href="https://arxiv.org/abs/2605.21272"><img src="https://img.shields.io/badge/arXiv-2605.21272-b31b1b.svg?logo=arxiv&logoColor=white" alt="Paper"></a>
@@ -21,6 +21,7 @@
 - [Dataset](#dataset)
 - [Training](#training)
 - [Demo](#demo)
+- [Contributing](#contributing)
 - [Citation](#citation)
 - [License](#license)
 
@@ -28,9 +29,11 @@
 
 `nano-t2i` is a small 1.3B DiT-style **flow-matching** text-to-image model with a Qwen3-4B text encoder and a latent VAE backbone, trained in two phases (512 → 1024) on the [MONET](https://huggingface.co/datasets/jasperai/monet) synthetic captioned-image dataset. The model relies on AdaLN sharing and is initialized using AdaLN-Zero. It is built on top of [PyTorch Lightning](https://lightning.ai/) and [diffusers](https://github.com/huggingface/diffusers), and is designed to be:
 
-- **Small enough to fit on a single H200 GPU** (the `nano` config: 5 dual-stream + 5 single-stream DiT blocks, 24 attention heads, 128-dim heads).
+- **Small enough to fit on a single H200 GPU** (the `nano` config: 5 dual-stream + 5 single-stream DiT blocks, 24 attention heads, 128-dim heads with AdaLN sharing).
 - **Hackable**: every architectural choice lives in the YAML config (see [`examples/trainings/configs/nano.yaml`](examples/trainings/configs/nano.yaml)).
 - **End-to-end reproducible**: from raw MONET shards to a working Gradio demo, in two commands.
+
+*Note:* This codebase also supports `flash attention` v3. We refer to [flash-attn repo](https://github.com/Dao-AILab/flash-attention/) for proper installation in your own environment.
 
 ## Results
 
@@ -49,11 +52,12 @@ Cost is computed at **~\$3 / H200 / hour** (representative of major cloud GPU pr
 
 | Resolution | Hardware | Wall time | Cost  | Example samples |
 |---|---|---|---|---|
-| 512  | 1×H200 | 24 h | ~\$72  | <a href="assets/gen_single_1_day_3.jpg"><img src="assets/gen_single_1_day_3.jpg" width="140"></a> <a href="assets/gen_single_1_day_1.jpg"><img src="assets/gen_single_1_day_1.jpg" width="140"></a> <a href="assets/gen_single_1_day_2.jpg"><img src="assets/gen_single_1_day_2.jpg" width="140"></a> <a href="assets/gen_single_1_day_0.jpg"><img src="assets/gen_single_1_day_0.jpg" width="140"></a> |
-| 512  | 1×H200 | 36 h | ~\$108 | in progress |
-| 1024 | 1×H200 | 48 h | ~\$144 | in progress |
-| 1024 | 1×H200 | 72 h | ~\$216 | in progress |
-| 1024 | 1×H200 | 96 h | ~\$288 | in progress |
+| 512  | 1×H200 | 24 h | ~\$72  | <a href="assets/24h/3.jpg"><img src="assets/24h/3.jpg" width="80"></a> <a href="assets/24h/1.jpg"><img src="assets/24h/1.jpg" width="80"></a> <a href="assets/24h/2.jpg"><img src="assets/24h/2.jpg" width="80"></a> <a href="assets/24h/0.jpg"><img src="assets/24h/0.jpg" width="80"></a> |
+| 512  | 1×H200 | 36 h | ~\$108 | <a href="assets/36h/3.jpg"><img src="assets/36h/3.jpg" width="80"></a> <a href="assets/36h/1.jpg"><img src="assets/36h/1.jpg" width="80"></a> <a href="assets/36h/2.jpg"><img src="assets/36h/2.jpg" width="80"></a> <a href="assets/36h/0.jpg"><img src="assets/36h/0.jpg" width="80"></a> |
+| 1024 | 1×H200 | 48 h | ~\$144 | <a href="assets/48h/3.jpg"><img src="assets/48h/3.jpg" width="80"></a> <a href="assets/48h/1.jpg"><img src="assets/48h/1.jpg" width="80"></a> <a href="assets/48h/2.jpg"><img src="assets/48h/2.jpg" width="80"></a> <a href="assets/48h/0.jpg"><img src="assets/48h/0.jpg" width="80"></a> |
+| 1024 | 1×H200 | 60 h | ~\$180 | <a href="assets/60h/3.jpg"><img src="assets/60h/3.jpg" width="80"></a> <a href="assets/60h/1.jpg"><img src="assets/60h/1.jpg" width="80"></a> <a href="assets/60h/2.jpg"><img src="assets/60h/2.jpg" width="80"></a> <a href="assets/60h/0.jpg"><img src="assets/60h/0.jpg" width="80"></a> |
+| 1024 | 1×H200 | 72 h | ~\$216 | <a href="assets/72h/3.jpg"><img src="assets/72h/3.jpg" width="80"></a> <a href="assets/72h/1.jpg"><img src="assets/72h/1.jpg" width="80"></a> <a href="assets/72h/2.jpg"><img src="assets/72h/2.jpg" width="80"></a> <a href="assets/72h/0.jpg"><img src="assets/72h/0.jpg" width="80"></a> |
+| 1024 | 1×H200 | 96 h | ~\$288 | <a href="assets/96h/3.jpg"><img src="assets/96h/3.jpg" width="80"></a> <a href="assets/96h/1.jpg"><img src="assets/96h/1.jpg" width="80"></a> <a href="assets/96h/2.jpg"><img src="assets/96h/2.jpg" width="80"></a> <a href="assets/96h/0.jpg"><img src="assets/96h/0.jpg" width="80"></a> |
 
 ## Setup
 
@@ -66,7 +70,7 @@ git clone https://github.com/gojasper/nano-t2i.git
 cd nano-t2i
 ```
 
-### With `uv` (recommended)
+### With `uv`
 
 ```shell
 uv venv envs/nano-t2i --python 3.13
@@ -134,6 +138,10 @@ A Gradio demo is provided in [`examples/inference/demo/t2i_demo.py`](examples/in
 ```shell
 python examples/inference/demo/t2i_demo.py
 ```
+
+## Contributing
+
+We welcome bug reports, documentation improvements, config updates, and focused code changes. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, code style, and the pull request process before opening a PR.
 
 ## Citation
 
