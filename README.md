@@ -10,6 +10,8 @@
   <a href="https://huggingface.co/datasets/jasperai/monet"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-MONET-ffcc4d" alt="MONET Dataset"></a>
   <a href="https://huggingface.co/spaces/jasperai/monet-retrieval"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-MONET%20Retrieval-ffcc4d" alt="MONET Retrieval"></a>
   <a href="https://huggingface.co/spaces/jasperai/monet-umap"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-MONET%20UMAP-ffcc4d" alt="MONET UMAP"></a>
+  <a href="https://gojasper.github.io/monet/"><img src='https://img.shields.io/badge/Project-page-blue' />
+	</a>
 </p>
 
 ## Table of contents
