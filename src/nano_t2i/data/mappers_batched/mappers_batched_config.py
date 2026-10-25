@@ -33,7 +33,7 @@ class MultiAspectRatioCacherConfig(BaseMapperBatchedConfig):
     """
     Cache input images (`image`, `mask`, `masked_image`) into buckets with different aspect ratios and pixel budgets.
     Each bucket is defined by a probability, pixel budget, aspect ratio, round_interval and batch size.
-    The mapper computed on the fly the crop coordinates and target size for each bucket and stores them in the batch.
+    The mapper computes on the fly the crop coordinates and target size for each bucket and stores them in the batch.
 
     Args:
 

@@ -30,7 +30,7 @@ class MultiAspectRatioCacherMapper(BaseMapperBatched):
         - Resizing them to target aspect ratios for this given pixel budget
 
     Each bucket is defined by a probability, pixel budget, aspect ratio, round_interval and batch size.
-    Since the size of the image is modified, the mapper computed on the fly the original-size, crop-coordinates and target-size for each bucket and stores them in the batch.
+    Since the size of the image is modified, the mapper computes on the fly the original-size, crop-coordinates and target-size for each bucket and stores them in the batch.
 
     Warning: the mapper expects batches of torch.Tensor images of length 1, make sure to use per_worker_batch_size=1
 
@@ -102,7 +102,7 @@ class MultiAspectRatioCacherMapper(BaseMapperBatched):
         pixel_budgets_probabilities: Optional[List[float]] = None,
     ) -> Union[dict, None]:
         """
-        Call the mapper that will resize the input images to the closest bucket size and aspect ratio. If probabilities and pixel budgets are provided, the mapper will sample a bucket based on the probabilities and pixel budgets. The pixel budgets must be a subset of the original pixel budgets and the probabilities must be sum to 1.
+        Call the mapper that will resize the input images to the closest bucket size and aspect ratio. If probabilities and pixel budgets are provided, the mapper will sample a bucket based on the probabilities and pixel budgets. The pixel budgets must be a subset of the original pixel budgets and the probabilities must sum to 1.
 
         Args:
             batch (dict): batch to map
@@ -124,7 +124,7 @@ class MultiAspectRatioCacherMapper(BaseMapperBatched):
 
             assert (
                 sum(pixel_budgets_probabilities) == 1
-            ), "pixel_budgets_probabilities must be sum to 1"
+            ), "pixel_budgets_probabilities must sum to 1"
             buckets_ids = [
                 self.buckets_ids_pixel_budget[pixel_budget]
                 for pixel_budget in pixel_budgets

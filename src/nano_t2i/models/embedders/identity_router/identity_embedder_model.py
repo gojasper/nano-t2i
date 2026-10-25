@@ -12,7 +12,7 @@ class IdentityEmbedder(BaseConditioner):
 
     Args:
 
-        config (ClipEmbedderConfig): The config class which defines all the required parameters.
+        config (IdentityEmbedderConfig): The config class which defines all the required parameters.
     """
 
     def __init__(self, config: IdentityEmbedderConfig):
@@ -36,7 +36,7 @@ class IdentityEmbedder(BaseConditioner):
         **kwargs,
     ):
         """
-        Forward pass of the ClipEmbedder
+        Forward pass of the IdentityEmbedder
 
         Args:
 

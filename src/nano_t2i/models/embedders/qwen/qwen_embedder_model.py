@@ -63,7 +63,7 @@ class QwenEmbedder(BaseConditioner):
         *args,
         **kwargs,
     ):
-        """Forward pass of the GemmaEmbedder
+        """Forward pass of the QwenEmbedder
 
         Args:
 

@@ -11,7 +11,7 @@ class AutoencoderDCDiffusers(BaseModel):
 
     Args:
 
-        config (AutoencoderKLDiffusersConfig): The config class which defines all the required parameters.
+        config (AutoencoderDCDiffusersConfig): The config class which defines all the required parameters.
     """
 
     def __init__(self, config: AutoencoderDCDiffusersConfig):

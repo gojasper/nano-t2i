@@ -53,7 +53,7 @@ class MultiDataModuleConfig(BaseConfig):
         configs (List[DataModuleConfig]): The configurations for the datasets. Note that per_worker_batch_size must be set to 1 for each config. Batching is handled internally.
         dataset_sampling_probabilities (List[float]): The probabilities for the datasets.
         per_worker_batch_size (int): The batch size for the dataset.
-        per_dataset_pixel_budgets (List[int]): The pixel budgets for the each of the datasets.
+        per_dataset_pixel_budgets (List[int]): The pixel budgets for each of the datasets.
         per_dataset_pixel_budgets_probabilities (List[float]): The probabilities for the pixel budgets for each of the datasets.
     """
 
@@ -105,4 +105,4 @@ class MultiDataModuleConfig(BaseConfig):
                 ), "per_dataset_pixel_budget and per_dataset_pixel_budgets_probabilities must have the same length"
                 assert (
                     sum(per_dataset_pixel_budgets_probabilities) == 1
-                ), "per_dataset_pixel_budgets_probabilities must be sum to 1"
+                ), "per_dataset_pixel_budgets_probabilities must sum to 1"
